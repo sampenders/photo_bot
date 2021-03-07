@@ -1,0 +1,51 @@
+title:
+"collectionAlias\":\"FloydKelley\",\"collectionName\":\"Floyd Kelley Collection\",\"contentType\":\"image/jp2\",\"filename\":\"116.jp2\",\"title\":\"Franklin_Branch_of_the_Minneapolis_Public_Library\",\"text\":null,\"pageNumber\":-1,\"imageWidth\":null,\"imageHeight\":null,\"fields\":[{\"key\":\"edit\",\"label\":\"Edit Item Description\",\"controlledVocab\":fal
+
+Address:
+{\"key\":\"addres\",\"label\":\"Address\",\"controlledVocab\":true,\"searchable\":true,\"value\":\"1314 Franklin Ave. E.\",\"controlledVocabList\":null}
+
+Year:
+{\"key\":\"year\",\"label\":\"Year\",\"controlledVocab\":false,\"searchable\":true,\"value\":\"1966\",\"controlle
+
+Decade:
+{\"key\":\"decade\",\"label\":\"Decade\",\"controlledVocab\":false,\"searchable\":true,\"value\":\"1960s\",\"controlledVocabList\":null}
+
+title:
+a['item']['item']['fields'][1]
+{'key': 'title', 'label': 'Title', 'controlledVocab': False, 'searchable': True, 'value': 'Franklin Branch of the Minneapolis Public Library', 'controlledVocabList': None}
+
+
+get date:
+a['item']['item']['title'] : title
+a['item']['item']['fields'][1]['value']
+{'key': 'title', 'label': 'Title', 'controlledVocab': False, 'searchable': True, 'value': 'Franklin Branch of the Minneapolis Public Library', 'controlledVocabList': None}
+
+year:
+a['item']['item']['fields'][5]
+{'key': 'year', 'label': 'Year', 'controlledVocab': False, 'searchable': True, 'value': '1966', 'controlledVocabList': None}
+
+decade:
+a['item']['item']['fields'][6]
+{'key': 'decade', 'label': 'Decade', 'controlledVocab': False, 'searchable': True, 'value': '1960s', 'controlledVocabList': None}
+
+photographer:
+a['item']['item']['fields'][4]
+{'key': 'creato', 'label': 'Photographer', 'controlledVocab': True, 'searchable': True, 'value': 'Kelley, Floyd J.', 'controlledVocabList': None}
+
+adderss:
+a['item']['item']['fields'][3]
+{'key': 'addres', 'label': 'Address', 'controlledVocab': True, 'searchable': True, 'value': '1314 Franklin Ave. E.', 'controlledVocabList': None}
+
+format:
+a['item']['item']['fields'][7]
+{'key': 'format', 'label': 'Format', 'controlledVocab': True, 'searchable': True, 'value': 'Color Transparency', 'controlledVocabList': None}
+
+type:
+a['item']['item']['fields'][8]
+{'key': 'type', 'label': 'Type', 'controlledVocab': True, 'searchable': True, 'value': 'Still Image', 'controlledVocabList': None}
+
+neighborhood
+{'key': 'neighb', 'label': 'Neighborhood', 'controlledVocab': True, 'searchable': True, 'value': 'Ventura Village Neighborhood', 'controlledVocabList': None}
+
+
+
