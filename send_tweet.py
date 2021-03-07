@@ -92,92 +92,94 @@ def create_send_post(collection, photo_id):
     auth.set_access_token(keys['access_token'], keys['access_token_secret'])
     api = tweepy.API(auth)
 
+    # images we'll be pulling
     base_url = 'https://digitalcollections.hclib.org/'
     full_url = base_url + 'digital/download/collection/' + collection + '/id/' + str(photo_id) + '/size/large'
     metadata_url = base_url + 'digital/collection/' + collection + '/id/' + str(photo_id)
 
     out_image = 'images/' + collection + photo_id + '.jpg'
 
-    # try until photo is saved and metadata is retrieved
-    photo_created = False
-    len_metadata = 1
-    while photo_created == False or len_metadata < 2:
-        photo_created = get_photo(full_url, out_image)
-        metadata = get_metadata(metadata_url, 'images/metadata.txt')
-        len_metadata = len(metadata)
+    # try to create photo and get metadata
+    photo_created = get_photo(full_url, out_image)
+    metadata = get_metadata(metadata_url, 'images/metadata.txt')
+    len_metadata = len(metadata)
 
-        '''
-        print(metadata)
-        print(len_metadata)
-        print(base_url)
-        print(metadata_url)
-        '''
+    # return false if photo and metadata weren't retrieved
+    if photo_created == True and len_metadata > 1:
+        
+        metadata_keys = list(metadata.keys())
+        title = metadata['title']
 
-        if photo_created == True and len_metadata > 1:
-            
-            metadata_keys = list(metadata.keys())
-
-            title = metadata['title']
-
-            # get date of tweet, if exists
-            if 'year' in metadata_keys:
-                date = metadata['year']
-            elif 'decade' in metadata_keys:
-                date = metadata['decade']
-            else:
-                date = 'unknown'
-
-            # get attribution 
-            if 'permis' in metadata_keys:
-                # assuming normal format
-                try:
-                    source = metadata['permis'].split(':')[1]
-                    source = source.strip(' ').strip('"').strip("'")
-
-                # if the format isn't as expected:
-                except:
-                    source = 'Hennepin County Library'
-            else:
-                source = 'Hennepin County Library'
-    
-            # make main tweet
-            tweet1 = title
-            tweet1 += '\nDate: ' + date
-            if 'addres' in metadata_keys:
-                tweet1 += '\nAddress: ' + metadata['addres'] 
-                if 'SE' in metadata['addres'].upper().split(' '):
-                    tweet1 += ' (#SEmpls)'
-            tweet1 += '\nSource: ' + source
-            print(tweet1)
-
-            if 'descri' in metadata_keys:
-                description = metadata['descri']
-            else:
-                description = ''
-
-            # check for offensive content
-            dont_post = bad_word_in_post(title, description, 'bad_words.txt')
-            if dont_post == False:
-                print('sending tweet')
-                status = api.update_with_media(out_image, tweet1)
-
+        # get date of tweet, if exists
+        if 'year' in metadata_keys:
+            date = metadata['year']
+        elif 'decade' in metadata_keys:
+            date = metadata['decade']
         else:
-            print(full_url + ' failed')
+            date = 'unknown'
+
+        # get attribution 
+        if 'permis' in metadata_keys:
+            # assuming normal format
+            try:
+                source = metadata['permis'].split(':')[1]
+                source = source.strip(' ').strip('"').strip("'")
+
+            # if the format isn't as expected:
+            except:
+                source = 'Hennepin County Library'
+        else:
+            source = 'Hennepin County Library'
+
+        # make main tweet
+        tweet1 = title
+        tweet1 += '\nDate: ' + date
+        if 'addres' in metadata_keys:
+            tweet1 += '\nAddress: ' + metadata['addres'] 
+            if 'SE' in metadata['addres'].upper().split(' '):
+                tweet1 += ' (#SEmpls)'
+        tweet1 += '\nSource: ' + source
+        print(tweet1)
+
+        if 'descri' in metadata_keys:
+            description = metadata['descri']
+        else:
+            description = ''
+
+        # check for offensive content
+        dont_post = bad_word_in_post(title, description, 'bad_words.txt')
+        if dont_post == False:
+            print('sending tweet')
+            status = api.update_with_media(out_image, tweet1)
+            return True
+        else:
+            return False
+
+    else:
+        print(full_url + ' failed')
+        return False
 
 if __name__ == '__main__':
 
     time = datetime.datetime.now()
 
-    if time.hour > 8 and time.hour < 22 and time.minute % 30 == 0:
+    if time.hour > 8 and time.hour < 22 and time.minute % 60 == 0:
 
-        collections = ['CPED', 'MplsPhotos']
-        max_idx = [21250, 60000]
+        # try until a photo is found and posted
+        posted = False
+        while posted == False:
+            collections = ['CPED', 'MplsPhotos']
+            max_idx = [21250, 60000]
 
-        # randomly choose collection and photo
-        coll = randint(0,1)
-        photo_idx = randint(1,max_idx[coll])
+            # randomly choose collection and photo
+            coll = randint(0,1)
+            photo_idx = randint(1,max_idx[coll])
 
-        create_send_post(collections[coll], str(photo_idx)) 
+            posted = create_send_post(collections[coll], str(photo_idx)) 
+
+        f = open('post_log.txt','a')
+        f.write(collections[coll] + ',' + str(photo_idx) + '\n')
+        f.close()
 '''
 
 # historical research inc (823 records)
