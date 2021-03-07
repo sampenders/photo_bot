@@ -168,7 +168,7 @@ if __name__ == '__main__':
 
     time = datetime.datetime.now()
 
-    if time.hour > 8 and time.hour < 22 and time.minute % 5 == 0:
+    if time.hour > 8 and time.hour < 22 and time.minute % 30 == 0:
 
         collections = ['CPED', 'MplsPhotos']
         max_idx = [21250, 60000]
