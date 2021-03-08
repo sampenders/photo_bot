@@ -162,14 +162,14 @@ def create_send_post(collection, photo_id):
 if __name__ == '__main__':
 
     time = datetime.datetime.now()
+    collections = ['CPED', 'MplsPhotos']
+    max_idx = [21250, 60000]
 
-    if time.hour > 8 and time.hour < 22 and time.minute % 60 == 0:
+    if time.hour => 8 and time.hour <= 22 and time.minute % 30 == 0:
 
         # try until a photo is found and posted
         posted = False
         while posted == False:
-            collections = ['CPED', 'MplsPhotos']
-            max_idx = [21250, 60000]
 
             # randomly choose collection and photo
             coll = randint(0,1)
@@ -180,6 +180,7 @@ if __name__ == '__main__':
         f = open('post_log.txt','a')
         f.write(collections[coll] + ',' + str(photo_idx) + '\n')
         f.close()
+
 '''
 
 # historical research inc (823 records)
