@@ -151,6 +151,13 @@ def create_send_post(collection, photo_id):
         if dont_post == False:
             print('sending tweet')
             status = api.update_with_media(out_image, tweet1)
+           
+            # add description in a reply if available
+            if description != '' and len(description) < 280 - 13:
+                descr_text = 'Description: ' + description
+                reply1 = api.update_status(status=descr_text, 
+                                 in_reply_to_status_id=status.id, 
+                                 auto_populate_reply_metadata=True)
             return True
         else:
             return False
@@ -165,7 +172,7 @@ if __name__ == '__main__':
     collections = ['CPED', 'MplsPhotos']
     max_idx = [21250, 60000]
 
-    if time.hour => 8 and time.hour <= 22 and time.minute % 30 == 0:
+    if time.hour >= 8 and time.hour <= 22 and time.minute % 30 == 0:
 
         # try until a photo is found and posted
         posted = False
