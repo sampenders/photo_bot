@@ -116,7 +116,7 @@ def create_send_post(collection, photo_id):
         elif 'decade' in metadata_keys:
             date = metadata['decade']
         else:
-            date = 'unknown'
+            date = 'Unknown'
 
         # get attribution 
         if 'permis' in metadata_keys:
@@ -169,23 +169,36 @@ def create_send_post(collection, photo_id):
 if __name__ == '__main__':
 
     time = datetime.datetime.now()
-    collections = ['CPED', 'MplsPhotos']
-    max_idx = [21250, 60000]
+    collections = ['CPED', 'MplsPhotos', 'FloydKelley']
+    max_idx = [21250, 60000, 212]
+    weights = [10, 8, 1]
 
-    if time.hour >= 8 and time.hour <= 22 and time.minute % 30 == 0:
+    sum_weights = 0
+    for i in weights: sum_weights+=i
+
+
+    if time.hour >= 8 and time.hour <= 22:
+
+        # randomly choose collection based on weights given
+        r = randint(0, sum_weights-1)
+        if r < weights[0]:
+            coll = 0
+        elif r < weights[0] + weights[1]:
+            coll = 1
+        elif r <= weights[0] + weights[1] + weights[2]:
+            coll = 2
 
         # try until a photo is found and posted
         posted = False
         while posted == False:
 
-            # randomly choose collection and photo
-            coll = randint(0,1)
+            # randomly choose photo in collection
             photo_idx = randint(1,max_idx[coll])
 
             posted = create_send_post(collections[coll], str(photo_idx)) 
 
         f = open('post_log.txt','a')
-        f.write(collections[coll] + ',' + str(photo_idx) + '\n')
+        f.write(time.strftime('%d/%m/%y %H:%M:%S') + ',' + collections[coll] + ',' + str(photo_idx) + '\n')
         f.close()
 
 '''
