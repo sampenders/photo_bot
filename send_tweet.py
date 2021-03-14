@@ -4,6 +4,19 @@ from random import randint
 import tweepy
 import datetime
 
+# randomly choose index of collection given weights
+def choose_collection(weights):
+    sum_w = 0
+    for i in weights: sum_w+= i
+
+    # find out which set r is in
+    r = randint(1,sum_w)
+    for i in range(0, len(weights)):
+        sum_ = 0
+        for j in range(0,i+1): sum_+=weights[j]
+        if r <= sum_:
+            return(i)
+
 def get_metadata(url, out_file):
       
     cmd = 'wget ' + url + ' --output-file=/dev/null -O ' + out_file
@@ -135,6 +148,7 @@ def create_send_post(collection, photo_id):
                 # if the format isn't as expected:
                 except:
                     perm_exists = False
+                    source = ''
                     #source = 'Hennepin County Library'
 
             # if the permissions say you need to contact them, don't post
@@ -198,9 +212,9 @@ def create_send_post(collection, photo_id):
 if __name__ == '__main__':
 
     time = datetime.datetime.now()
-    collections = ['CPED', 'MplsPhotos', 'FloydKelley']
-    max_idx = [21250, 60000, 212]
-    weights = [10, 8, 1]
+    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB']
+    max_idx = [21250, 60000, 212, 251]
+    weights = [20, 15, 1, 1]
 
     sum_weights = 0
     for i in weights: sum_weights+=i
@@ -208,13 +222,7 @@ if __name__ == '__main__':
     if time.hour >= 8 and time.hour <= 22:
 
         # randomly choose collection based on weights given
-        r = randint(0, sum_weights-1)
-        if r < weights[0]:
-            coll = 0
-        elif r < weights[0] + weights[1]:
-            coll = 1
-        elif r <= weights[0] + weights[1] + weights[2]:
-            coll = 2
+        coll = choose_collection(weights)
 
         # try until a photo is found and posted
         posted = False
