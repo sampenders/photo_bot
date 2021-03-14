@@ -9,7 +9,9 @@ for i in range (0, 100):
     m = get_metadata(url, 'images/metadata.txt')
     print(m['permis'])
 '''
-r = '12345'
+'''
+r = '123454243423'
 url = 'https://digitalcollections.hclib.org/digital/collection/CPED/id/' + r
 m = get_metadata(url, 'images/metadata.txt')
-#create_send_post('CPED', r)
+'''
+create_send_post('MplsPhotos', '59249')

@@ -26,9 +26,11 @@ def get_metadata(url, out_file):
     t = t.lstrip('"')
 
     data = json.loads(t)
-    print(data)
     metadata = {}
     try:
+        # add id field to metadata
+        metadata.update({'id':data['item']['item']['id']})
+
         for i in range(0, len(data['item']['item']['fields'])):
             entry = data['item']['item']['fields'][i]
 
@@ -70,7 +72,7 @@ def bad_word_in_post(title, descr, subj, input_file):
             bad_word_list.append(bad_word) 
 
     for word in bad_word_list:
-        if word in title.lower() or word in descr.lower():
+        if word in title.lower() or word in descr.lower() or word in subj:
             return True
     return False
 
@@ -104,8 +106,9 @@ def create_send_post(collection, photo_id):
     metadata = get_metadata(metadata_url, 'images/metadata.txt')
     len_metadata = len(metadata)
 
-    # return false if photo and metadata weren't retrieved
-    if photo_created == True and len_metadata > 1:
+    # return false if photo or metadata weren't retrieved or 
+    # index of metadata doesn't match intended value
+    if photo_created == True and len_metadata > 1 and str(metadata['id']) == str(photo_id):
         
         metadata_keys = list(metadata.keys())
         title = metadata['title']
@@ -118,17 +121,30 @@ def create_send_post(collection, photo_id):
         else:
             date = 'Unknown'
 
-        # get attribution 
+        # get attribution
+        perm_exists = False
         if 'permis' in metadata_keys:
-            # assuming normal format
-            try:
-                source = metadata['permis'].split(':')[1]
-                source = source.strip(' ').strip('"').strip("'")
 
-            # if the format isn't as expected:
-            except:
-                source = 'Hennepin County Library'
+            # assuming normal format
+            if ':' in metadata['permis']:
+                try:
+                    source = metadata['permis'].split(':')[1]
+                    source = source.strip(' ').strip('"').strip("'")
+                    perm_exists = True
+
+                # if the format isn't as expected:
+                except:
+                    perm_exists = False
+                    #source = 'Hennepin County Library'
+
+            # if the permissions say you need to contact them, don't post
+            if 'viewed' in metadata['permis'] and 'specialcoll@hclib.org' in metadata['permis']:
+                source = ''
+                perm_exists = False
+
+        # if there is no permissions field 
         else:
+            perm_exists = True
             source = 'Hennepin County Library'
 
         # make main tweet
@@ -146,9 +162,15 @@ def create_send_post(collection, photo_id):
         else:
             description = ''
 
+        if 'subjec' in metadata_keys:
+            subject = metadata['subjec']
+        else:
+            subject = ''
+
         # check for offensive content
-        dont_post = bad_word_in_post(title, description, 'bad_words.txt')
-        if dont_post == False:
+        # post if non-offensive and there are permissions
+        dont_post = bad_word_in_post(title, description, subject, 'bad_words.txt')
+        if dont_post == False and perm_exists == True:
             print('sending tweet')
             status = api.update_with_media(out_image, tweet1)
            
@@ -159,13 +181,20 @@ def create_send_post(collection, photo_id):
                                  in_reply_to_status_id=status.id, 
                                  auto_populate_reply_metadata=True)
             return True
+
+        # if there's a filtered word in the post
         else:
+            print('bad word: ' + str(dont_post))
+            print('permission to post: ' + str(perm_exists))
             return False
 
+    # failed if couldn't get photo, metadata, or metadata id doesn't match
     else:
         print(full_url + ' failed')
         return False
 
+# main loop for sending posts
+# try to send until we successfully get an image
 if __name__ == '__main__':
 
     time = datetime.datetime.now()
