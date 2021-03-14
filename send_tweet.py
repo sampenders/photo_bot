@@ -26,7 +26,7 @@ def get_metadata(url, out_file):
     t = t.lstrip('"')
 
     data = json.loads(t)
-
+    print(data)
     metadata = {}
     try:
         for i in range(0, len(data['item']['item']['fields'])):
@@ -61,7 +61,7 @@ def get_photo(url, out_image):
         return True
 
 # return true if bad word in title of description string
-def bad_word_in_post(title, descr, input_file):
+def bad_word_in_post(title, descr, subj, input_file):
 
     bad_word_list = []
     with open(input_file) as f:
@@ -175,7 +175,6 @@ if __name__ == '__main__':
 
     sum_weights = 0
     for i in weights: sum_weights+=i
-
 
     if time.hour >= 8 and time.hour <= 22:
 
