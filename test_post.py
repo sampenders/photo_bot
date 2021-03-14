@@ -14,4 +14,4 @@ r = '123454243423'
 url = 'https://digitalcollections.hclib.org/digital/collection/CPED/id/' + r
 m = get_metadata(url, 'images/metadata.txt')
 '''
-create_send_post('MplsPhotos', '59249')
+create_send_post('MPRB', '7')
