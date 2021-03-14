@@ -7,11 +7,12 @@ for i in range (0, 100):
     r = str(randint(1,20000))
     url = 'https://digitalcollections.hclib.org/digital/collection/CPED/id/' + r
     m = get_metadata(url, 'images/metadata.txt')
-    print(m['permis'])
-'''
-r = '123'
-url = 'https://digitalcollections.hclib.org/digital/collection/CPED/id/' + r
+    if 'descri' in list(m.keys()):
+        print(m['id'], len(m['descri']), m['descri'])
+url = 'https://digitalcollections.hclib.org/digital/collection/CPED/id/' + '18289'
 m = get_metadata(url, 'images/metadata.txt')
-print(m)
 
-# create_send_post('MPRB', '7')
+d = description_parts(m['descri'])
+print(d)
+'''
+create_send_post('CPED', '18289')

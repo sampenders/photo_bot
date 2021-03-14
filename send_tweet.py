@@ -4,6 +4,41 @@ from random import randint
 import tweepy
 import datetime
 
+# break up description into valid length parts
+def description_parts(description):
+
+    description = 'Description: ' + description
+    split_d = description.split(' ')
+    d_parts = []
+    
+    prev_len = 0
+    len_phrase = 0
+    idx_last_phrase = 0
+    for i in range(0, len(split_d)):
+        prev_len = len_phrase
+        len_phrase += len(split_d[i]) + 1
+
+        # create first part of description
+        if len_phrase > 276 and len(description) > 280:
+            phrase = ''
+            for j in range(idx_last_phrase, i-1):
+                phrase += split_d[j] + ' '
+            phrase += split_d[i-1] + ' ...'
+            d_parts.append(phrase)
+
+            # reinitialize to get rest
+            len_phrase = 0
+            idx_last_phrase = i
+
+        if i == len(split_d)-1:
+            phrase = ''
+            for j in range(idx_last_phrase, i):
+                phrase += split_d[j] + ' '
+            phrase += split_d[i]
+            d_parts.append(phrase)
+
+    return d_parts
+
 # randomly choose index of collection given weights
 def choose_collection(weights):
     sum_w = 0
@@ -186,7 +221,7 @@ def create_send_post(collection, photo_id):
         in_mpls = False
         if 'city' in metadata_keys:
             city = metadata['city']
-            cities = ['minneapolis','saint anthony and minneapolis', 'saint anthony', 'richfield', 'hopkins', 'saint louis park', 'robbinsdale']
+            cities = ['minneapolis','saint anthony and minneapolis', 'saint anthony', 'richfield', 'hopkins', 'saint louis park', 'robbinsdale', 'fort snelling']
             if city.lower() in cities:
                 in_mpls = True
             elif city.lower() in title or city.lower() in description or city.lower() in subject:
@@ -206,11 +241,15 @@ def create_send_post(collection, photo_id):
             status = api.update_with_media(out_image, tweet1)
            
             # add description in a reply if available
-            if description != '' and len(description) < 280 - 13:
-                descr_text = 'Description: ' + description
-                reply1 = api.update_status(status=descr_text, 
-                                 in_reply_to_status_id=status.id, 
-                                 auto_populate_reply_metadata=True)
+            if description != '':
+                descr_text = description_parts(description)
+                prev_id = status.id
+                for d in descr_text:
+                    reply = api.update_status(status=d, 
+                                     in_reply_to_status_id=prev_id, 
+                                     auto_populate_reply_metadata=True)
+                    prev_id = reply.id
+
             return True
 
         # if there's a filtered word in the post
