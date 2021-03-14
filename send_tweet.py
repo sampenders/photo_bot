@@ -181,10 +181,27 @@ def create_send_post(collection, photo_id):
         else:
             subject = ''
 
+        # check that the photo was taken in minneapolis
+        # if there's no city field, assume it was in mpls
+        in_mpls = False
+        if 'city' in metadata_keys:
+            city = metadata['city']
+            cities = ['minneapolis','saint anthony and minneapolis', 'saint anthony', 'richfield', 'hopkins', 'saint louis park', 'robbinsdale']
+            if city.lower() in cities:
+                in_mpls = True
+            elif city.lower() in title or city.lower() in description or city.lower() in subject:
+                in_mpls = True
+            else:
+                in_mpls = False
+
+        # assume it's in minneapolis if no city provided
+        else:
+            in_mpls = True
+
         # check for offensive content
         # post if non-offensive and there are permissions
         dont_post = bad_word_in_post(title, description, subject, 'bad_words.txt')
-        if dont_post == False and perm_exists == True:
+        if dont_post == False and perm_exists == True and in_mpls == True:
             print('sending tweet')
             status = api.update_with_media(out_image, tweet1)
            
@@ -200,6 +217,7 @@ def create_send_post(collection, photo_id):
         else:
             print('bad word: ' + str(dont_post))
             print('permission to post: ' + str(perm_exists))
+            print('in mpls: ' + str(in_mpls))
             return False
 
     # failed if couldn't get photo, metadata, or metadata id doesn't match
@@ -212,9 +230,9 @@ def create_send_post(collection, photo_id):
 if __name__ == '__main__':
 
     time = datetime.datetime.now()
-    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB']
-    max_idx = [21250, 60000, 212, 251]
-    weights = [20, 15, 1, 1]
+    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18']
+    max_idx = [21250, 60000, 212, 251, 1100]
+    weights = [20, 15, 1, 1, 5]
 
     sum_weights = 0
     for i in weights: sum_weights+=i
