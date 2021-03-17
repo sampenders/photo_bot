@@ -3,3 +3,4 @@ bad_words.txt
 post_log.txt
 send_tweet.sh
 images/*
+*.db

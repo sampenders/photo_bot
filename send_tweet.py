@@ -186,6 +186,10 @@ def create_send_post(collection, photo_id):
                     source = ''
                     #source = 'Hennepin County Library'
 
+            # different format for glanton
+            if 'glanton' in metadata['permis'].lower():
+                source = 'Hennepin County Library and the children of John Glanton'
+
             # if the permissions say you need to contact them, don't post
             if 'viewed' in metadata['permis'] and 'specialcoll@hclib.org' in metadata['permis']:
                 source = ''
@@ -269,9 +273,11 @@ def create_send_post(collection, photo_id):
 if __name__ == '__main__':
 
     time = datetime.datetime.now()
-    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18']
-    max_idx = [21250, 60000, 212, 251, 1100]
-    weights = [20, 15, 1, 1, 5]
+
+    # coll18 is really old photos, coll1 is glanton photos
+    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1' ]
+    max_idx = [21250, 60000, 212, 251, 1100, 820]
+    weights = [20, 15, 1, 1, 5, 5]
 
     sum_weights = 0
     for i in weights: sum_weights+=i
