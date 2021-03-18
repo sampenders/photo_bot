@@ -15,4 +15,4 @@ m = get_metadata(url, 'images/metadata.txt')
 d = description_parts(m['descri'])
 print(d)
 '''
-create_send_post('CPED', '18289')
+create_send_post('MplsPhotos', '34077')

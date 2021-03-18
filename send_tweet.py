@@ -3,6 +3,45 @@ import json
 from random import randint
 import tweepy
 import datetime
+import sqlite3
+
+class photoDB:
+    def __init__(self, db_name):
+        self.con = sqlite3.connect(db_name)
+        self.cur = self.con.cursor()
+
+    def update_database(self, data):
+        self.cur.execute('''UPDATE photos
+                SET posted_date = ?
+                WHERE
+                    id = ?
+                '''
+                , data
+                )
+        self.con.commit()
+
+    def get_random_row(self, collection):
+        d = self.cur.execute('''
+        SELECT record FROM photos
+        WHERE collection=? AND
+        posted_date IS NULL AND
+        dont_post IS NOT 1 AND
+        invalid_record IS NOT 1
+        ''',
+        [collection])
+
+        records = d.fetchall()
+        return records[randint(0,len(records)-1)][0]
+
+    def update_row_status(self, date, id_, dont_post):
+        self.cur.execute('''
+        UPDATE photos
+        SET posted_date=?, dont_post=?
+        WHERE id=?
+        ''',
+        [date, dont_post, id_])
+
+        self.con.commit()
 
 # break up description into valid length parts
 def description_parts(description):
@@ -277,7 +316,10 @@ if __name__ == '__main__':
     # coll18 is really old photos, coll1 is glanton photos
     collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1' ]
     max_idx = [21250, 60000, 212, 251, 1100, 820]
-    weights = [20, 15, 1, 1, 5, 5]
+    weights = [20, 15, 1, 1, 5, 3]
+
+    # open connection to photo database
+    db = photoDB('photoDB.db')
 
     sum_weights = 0
     for i in weights: sum_weights+=i
@@ -292,13 +334,23 @@ if __name__ == '__main__':
         while posted == False:
 
             # randomly choose photo in collection
-            photo_idx = randint(1,max_idx[coll])
+            photo_idx = db.get_random_row(collections[coll])
+            #photo_idx = randint(1,max_idx[coll])
 
-            posted = create_send_post(collections[coll], str(photo_idx)) 
+            posted = create_send_post(collections[coll], str(photo_idx))
+
+            # update database with whether this was posted or not
+            if posted == False:
+                db.update_row_status(None, collections[coll] + '_' + str(photo_idx), 1)
+
+            else:
+                db.update_row_status(time.strftime('%d/%m/%y %H:%M:%S'), collections[coll] + '_' + str(photo_idx), 0)
 
         f = open('post_log.txt','a')
         f.write(time.strftime('%d/%m/%y %H:%M:%S') + ',' + collections[coll] + ',' + str(photo_idx) + '\n')
         f.close()
+
+        db.con.close()
 
 '''
 
