@@ -15,4 +15,6 @@ m = get_metadata(url, 'images/metadata.txt')
 d = description_parts(m['descri'])
 print(d)
 '''
-create_send_post('MplsPhotos', '34077')
+m = get_metadata('https://digitalcollections.hclib.org/digital/collection/MplsPhotos/id/', '54680')
+print(m)
+create_send_post('MplsPhotos', '54680')

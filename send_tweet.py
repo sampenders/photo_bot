@@ -159,7 +159,7 @@ def bad_word_in_post(title, descr, subj, input_file):
             bad_word_list.append(bad_word) 
 
     for word in bad_word_list:
-        if word in title.lower() or word in descr.lower() or word in subj:
+        if word in title.lower() or word in descr.lower() or word in subj.lower():
             return True
     return False
 
@@ -267,7 +267,7 @@ def create_send_post(collection, photo_id):
             cities = ['minneapolis','saint anthony and minneapolis', 'saint anthony', 'richfield', 'hopkins', 'saint louis park', 'robbinsdale', 'fort snelling']
             if city.lower() in cities:
                 in_mpls = True
-            elif city.lower() in title or city.lower() in description or city.lower() in subject:
+            elif city in title.lower() or city in description.lower() or city in subject.lower():
                 in_mpls = True
             else:
                 in_mpls = False
@@ -330,21 +330,23 @@ if __name__ == '__main__':
         coll = choose_collection(weights)
 
         # try until a photo is found and posted
+        tries = 0
         posted = False
-        while posted == False:
+        while posted == False and tries < 10:
 
             # randomly choose photo in collection
             photo_idx = db.get_random_row(collections[coll])
             #photo_idx = randint(1,max_idx[coll])
-
+            
             posted = create_send_post(collections[coll], str(photo_idx))
 
             # update database with whether this was posted or not
             if posted == False:
-                db.update_row_status(None, collections[coll] + '_' + str(photo_idx), 1)
-
+                db.update_row_status(time.strftime('%d/%m/%y %H:%M:%S'), collections[coll] + '_' + str(photo_idx), 1)
             else:
                 db.update_row_status(time.strftime('%d/%m/%y %H:%M:%S'), collections[coll] + '_' + str(photo_idx), 0)
+
+            tries += 1
 
         f = open('post_log.txt','a')
         f.write(time.strftime('%d/%m/%y %H:%M:%S') + ',' + collections[coll] + ',' + str(photo_idx) + '\n')

@@ -81,15 +81,26 @@ for row in cur.execute("SELECT * FROM photos WHERE id='p17208coll1_305'"):
 '''
 
 db = photoDB('photoDB.db')
+#populate_all(db.cur, db.con)
+
+with open('post_log.txt', newline='\n') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        data = [row[0], row[1] + '_' + str(row[2])]
+        db.update_database(data)
+        print(row)
+'''
 print(db.get_random_row('CPED'))
 db.update_row_status('01/01/21 00:00:55', 'CPED_2', 20)
 #db.update_database(['01/01/01 00:00:00','CPED_2'])
+'''
 db.con.commit()
 db.con.close()
-
+'''
 # print(get_random_row(cur, con, 'CPED'))
 
 #update_row_status(cur, con, '01/01/21 00:00:00', 'CPED_1', None)
 
 #con.commit()
 #con.close()
+'''
