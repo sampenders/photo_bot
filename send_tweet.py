@@ -97,34 +97,69 @@ def get_metadata(url, out_file):
     proc = subprocess.Popen(cmd, shell=True)
     proc.wait()
 
-    t = ''
-    with open('images/metadata.txt') as f:
-        for line in f:
-            if 'JSON' in line:
-                t = line[line.find('JSON') + 12: len(line)-4]
-    if t == '':
-        return
-   
-    # clean data
-    t = t.replace('\\\\\\"',"'")
-    t = t.replace('\\','')
-    t = t.strip('\n')
-    t = t.rstrip('"')
-    t = t.lstrip('"')
+    # if this if from streetcar collection:
+    if 'msn' in url:
+        try:
+            f = open(out_file)
+            t = json.load(f)
+            keys = list(t['response']['document'].keys())
+            metadata = {}
+        # if invalid record
+        except:
+            return {}
+            
+        
+        # get title
+        metadata.update({'title':t['response']['document']['title_ssi']})
+        metadata.update({'permis':'Minnesota Streetcar Museum'})
+        metadata.update({'id':t['response']['document']['id'].split(':')[1]})
+        
+        # get description
+        if 'description_ts' in keys:
+            metadata.update({'descri':t['response']['document']['description_ts']})
+        #else:
+        #    metadata.update({'descri':''})
+            
+        if 'dat_tesi' in keys:
+            metadata.update({'year':t['response']['document']['dat_tesi']})
+            
+        if 'city_ssim' in keys:
+            metadata.update({'city':t['response']['document']['city_ssim'][0]})
+            
+        f.close()
+            
+        #m.update{'title':t['response']['document']['title_ssi']}
 
-    data = json.loads(t)
-    metadata = {}
-    try:
-        # add id field to metadata
-        metadata.update({'id':data['item']['item']['id']})
+    # else if this is hclib photo
+    else:
+        t = ''
+        with open('images/metadata.txt') as f:
+            for line in f:
+                if 'JSON' in line:
+                    t = line[line.find('JSON') + 12: len(line)-4]
+        if t == '':
+            return
+       
+        # clean data
+        t = t.replace('\\\\\\"',"'")
+        t = t.replace('\\','')
+        t = t.strip('\n')
+        t = t.rstrip('"')
+        t = t.lstrip('"')
 
-        for i in range(0, len(data['item']['item']['fields'])):
-            entry = data['item']['item']['fields'][i]
+        data = json.loads(t)
+        metadata = {}
+        try:
+            # add id field to metadata
+            metadata.update({'id':data['item']['item']['id']})
 
-            metadata.update({entry['key']:entry['value']})
-    except:
-        print('failure to get metadata')
-        print(data['item']['item'])
+            for i in range(0, len(data['item']['item']['fields'])):
+                entry = data['item']['item']['fields'][i]
+
+                metadata.update({entry['key']:entry['value']})
+        except:
+            print('failure to get metadata')
+            print(data['item']['item'])
 
     return metadata
 
@@ -182,11 +217,18 @@ def create_send_post(collection, photo_id):
     api = tweepy.API(auth)
 
     # images we'll be pulling
-    base_url = 'https://digitalcollections.hclib.org/'
-    full_url = base_url + 'digital/download/collection/' + collection + '/id/' + str(photo_id) + '/size/large'
-    metadata_url = base_url + 'digital/collection/' + collection + '/id/' + str(photo_id)
+    if collection == 'msn':
+        full_url = 'https://cdm16022.contentdm.oclc.org/digital/iiif/msn/' + str(photo_id) + '/full/1920,1920/0/default.jpg'
+        metadata_url = 'https://collection.mndigital.org//catalog/msn:' + str(photo_id) + '.json'
 
-    out_image = 'images/' + collection + photo_id + '.jpg'
+        out_image = 'images/' + collection + photo_id + '.jpg'       
+    # if hclib collection:
+    else:
+        base_url = 'https://digitalcollections.hclib.org/'
+        full_url = base_url + 'digital/download/collection/' + collection + '/id/' + str(photo_id) + '/size/large'
+        metadata_url = base_url + 'digital/collection/' + collection + '/id/' + str(photo_id)
+
+        out_image = 'images/' + collection + photo_id + '.jpg'
 
     # try to create photo and get metadata
     photo_created = get_photo(full_url, out_image)
@@ -228,6 +270,10 @@ def create_send_post(collection, photo_id):
             # different format for glanton
             if 'glanton' in metadata['permis'].lower():
                 source = 'Hennepin County Library and the children of John Glanton'
+                
+            if 'Streetcar Museum' in metadata['permis']:
+                source = metadata['permis']
+                perm_exists = True
 
             # if the permissions say you need to contact them, don't post
             if 'viewed' in metadata['permis'] and 'specialcoll@hclib.org' in metadata['permis']:
@@ -314,9 +360,9 @@ if __name__ == '__main__':
     time = datetime.datetime.now()
 
     # coll18 is really old photos, coll1 is glanton photos
-    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1' ]
-    max_idx = [21250, 60000, 212, 251, 1100, 820]
-    weights = [20, 15, 1, 1, 5, 3]
+    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1', 'msn']
+    max_idx = [21250, 60000, 212, 251, 1100, 820, 2776]
+    weights = [20, 15, 1, 1, 5, 3, 10]
 
     # open connection to photo database
     db = photoDB('photoDB.db')

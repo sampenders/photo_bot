@@ -15,6 +15,16 @@ m = get_metadata(url, 'images/metadata.txt')
 d = description_parts(m['descri'])
 print(d)
 '''
-m = get_metadata('https://digitalcollections.hclib.org/digital/collection/MplsPhotos/id/', '54680')
+#m = get_metadata('https://digitalcollections.hclib.org/digital/collection/MplsPhotos/id/', '54680')
+
+r = '1'
+m = get_metadata('https://collection.mndigital.org//catalog/msn:' + r + '.json', 'images/metadata.txt')
 print(m)
-create_send_post('MplsPhotos', '54680')
+'''
+for i in range(1,10):
+    r = str(randint(1, 2700))
+    print(r)
+    m = get_metadata('https://collection.mndigital.org//catalog/msn:' + r + '.json', 'images/metadata.txt')
+    print(m)
+'''
+create_send_post('msn', '2')

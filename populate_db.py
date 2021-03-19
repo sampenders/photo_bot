@@ -43,8 +43,10 @@ class photoDB:
 #con = sqlite3.connect('photoDB.db')
 #cur = con.cursor()
 
-collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1' ]
-max_idx = [21250, 60000, 212, 251, 1100, 820]
+#collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1' ]
+#max_idx = [21250, 60000, 212, 251, 1100, 820]
+collections = ['msn' ]
+max_idx = [2776]
 
 # generate all rows based on collection, max_idx number
 def populate_all(cur, con):
@@ -83,12 +85,14 @@ for row in cur.execute("SELECT * FROM photos WHERE id='p17208coll1_305'"):
 db = photoDB('photoDB.db')
 #populate_all(db.cur, db.con)
 
+'''
 with open('post_log.txt', newline='\n') as f:
     reader = csv.reader(f)
     for row in reader:
         data = [row[0], row[1] + '_' + str(row[2])]
         db.update_database(data)
         print(row)
+'''
 '''
 print(db.get_random_row('CPED'))
 db.update_row_status('01/01/21 00:00:55', 'CPED_2', 20)
