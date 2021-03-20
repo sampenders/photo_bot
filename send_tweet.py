@@ -160,7 +160,7 @@ def get_metadata(url, out_file):
             for i in range(0, len(data['item']['item']['fields'])):
                 entry = data['item']['item']['fields'][i]
 
-                metadata.update({entry['key']:entry['value']})
+                metadata.update({entry['key']:entry['value'].strip()})
         except:
             print('failure to get metadata')
             print(data['item']['item'])
