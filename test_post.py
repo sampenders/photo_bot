@@ -17,14 +17,17 @@ print(d)
 '''
 #m = get_metadata('https://digitalcollections.hclib.org/digital/collection/MplsPhotos/id/', '54680')
 
+'''
 r = '1'
 m = get_metadata('https://collection.mndigital.org//catalog/msn:' + r + '.json', 'images/metadata.txt')
 print(m)
 '''
-for i in range(1,10):
+
+'''
+for i in range(1,100):
     r = str(randint(1, 2700))
     print(r)
     m = get_metadata('https://collection.mndigital.org//catalog/msn:' + r + '.json', 'images/metadata.txt')
-    print(m)
+    #print(m)
 '''
-create_send_post('msn', '2')
+create_send_post('msn', '2618')

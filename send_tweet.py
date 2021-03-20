@@ -124,7 +124,11 @@ def get_metadata(url, out_file):
             metadata.update({'year':t['response']['document']['dat_tesi']})
             
         if 'city_ssim' in keys:
-            metadata.update({'city':t['response']['document']['city_ssim'][0]})
+            cities = t['response']['document']['city_ssim']
+            if 'Minneapolis' in cities:
+                metadata.update({'city':'Minneapolis'})
+            else:
+                metadata.update({'city':t['response']['document']['city_ssim'][0]})
             
         f.close()
             
@@ -310,7 +314,7 @@ def create_send_post(collection, photo_id):
         in_mpls = False
         if 'city' in metadata_keys:
             city = metadata['city']
-            cities = ['minneapolis','saint anthony and minneapolis', 'saint anthony', 'richfield', 'hopkins', 'saint louis park', 'robbinsdale', 'fort snelling']
+            cities = ['minneapolis','saint anthony and minneapolis', 'saint anthony', 'richfield', 'hopkins', 'saint louis park', 'st. louis park', 'robbinsdale', 'fort snelling', 'golden valley', 'columbia heights']
             if city.lower() in cities:
                 in_mpls = True
             elif city in title.lower() or city in description.lower() or city in subject.lower():
