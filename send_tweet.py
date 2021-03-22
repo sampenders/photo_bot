@@ -31,7 +31,12 @@ class photoDB:
         [collection])
 
         records = d.fetchall()
-        return records[randint(0,len(records)-1)][0]
+
+        # if there are no records found
+        if len(records) == 0:
+            return -1
+        else:
+            return records[randint(0,len(records)-1)][0]
 
     def update_row_status(self, date, id_, dont_post):
         self.cur.execute('''
@@ -295,7 +300,7 @@ def create_send_post(collection, photo_id):
         if 'addres' in metadata_keys:
             tweet1 += '\nAddress: ' + metadata['addres'] 
             if 'SE' in metadata['addres'].upper().split(' '):
-                tweet1 += ' (#SEmpls)'
+                tweet1 += ' #SEmpls'
         tweet1 += '\nSource: ' + source
         print(tweet1)
 
@@ -317,10 +322,13 @@ def create_send_post(collection, photo_id):
             cities = ['minneapolis','saint anthony and minneapolis', 'saint anthony', 'richfield', 'hopkins', 'saint louis park', 'st. louis park', 'robbinsdale', 'fort snelling', 'golden valley', 'columbia heights']
             if city.lower() in cities:
                 in_mpls = True
-            elif city in title.lower() or city in description.lower() or city in subject.lower():
-                in_mpls = True
             else:
                 in_mpls = False
+
+        # assume in minneapolis is minneapolis mentioned. this is
+        # redundant for now
+        elif 'minneapolis' in title.lower() or 'minneapolis' in description.lower() or 'minneapolis' in subject.lower():
+            in_mpls = True
 
         # assume it's in minneapolis if no city provided
         else:
@@ -376,27 +384,29 @@ if __name__ == '__main__':
 
     if time.hour >= 8 and time.hour <= 22:
 
-        # randomly choose collection based on weights given
-        coll = choose_collection(weights)
 
         # try until a photo is found and posted
         tries = 0
         posted = False
         while posted == False and tries < 10:
 
+            # randomly choose collection based on weights given
+            coll = choose_collection(weights)
+
             # randomly choose photo in collection
+            # if = -1, then there are no records left
             photo_idx = db.get_random_row(collections[coll])
-            #photo_idx = randint(1,max_idx[coll])
-            
-            posted = create_send_post(collections[coll], str(photo_idx))
+            #photo_idx = randint(1,max_idx[coll]) 
+            if int(photo_idx) != -1:
+                posted = create_send_post(collections[coll], str(photo_idx))
 
-            # update database with whether this was posted or not
-            if posted == False:
-                db.update_row_status(time.strftime('%d/%m/%y %H:%M:%S'), collections[coll] + '_' + str(photo_idx), 1)
-            else:
-                db.update_row_status(time.strftime('%d/%m/%y %H:%M:%S'), collections[coll] + '_' + str(photo_idx), 0)
+                # update database with whether this was posted or not
+                if posted == False:
+                    db.update_row_status(time.strftime('%d/%m/%y %H:%M:%S'), collections[coll] + '_' + str(photo_idx), 1)
+                else:
+                    db.update_row_status(time.strftime('%d/%m/%y %H:%M:%S'), collections[coll] + '_' + str(photo_idx), 0)
 
-            tries += 1
+                tries += 1
 
         f = open('post_log.txt','a')
         f.write(time.strftime('%d/%m/%y %H:%M:%S') + ',' + collections[coll] + ',' + str(photo_idx) + '\n')
