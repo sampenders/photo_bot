@@ -1,8 +1,11 @@
+from send_tweet import *
+import sqlite3
 
+db = photoDB('photoDB.db')
+collection = 'p17208coll15'
 
-city = 'mpls'
-cities = ['mpls', 'saint anthony', 'test']
+for i in range(0, 1407):
+    db.cur.execute('''INSERT INTO photos (id, collection, record)
+        VALUES (?, ?, ?)''', [collection+'_'+str(i), collection, i])
 
-for c in city: if city in c: in_mpls = True
-
-print(in_mpls)
+db.con.commit()

@@ -372,9 +372,9 @@ if __name__ == '__main__':
     time = datetime.datetime.now()
 
     # coll18 is really old photos, coll1 is glanton photos
-    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1', 'msn']
-    max_idx = [21250, 60000, 212, 251, 1100, 820, 2776]
-    weights = [20, 15, 1, 1, 5, 3, 10]
+    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1', 'msn', 'p17208coll15']
+    max_idx = [21250, 60000, 212, 251, 1100, 820, 2776, 1406]
+    weights = [20, 15, 1, 1, 5, 3, 10, 5]
 
     # open connection to photo database
     db = photoDB('photoDB.db')
