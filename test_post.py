@@ -15,7 +15,8 @@ m = get_metadata(url, 'images/metadata.txt')
 d = description_parts(m['descri'])
 print(d)
 '''
-m = get_metadata('https://digitalcollections.hclib.org/digital/collection/MplsPhotos/id/', '54680')
+r = str(randint(1,20000))
+m = get_metadata('https://umedia.lib.umn.edu/item/p16022coll175:' + r + '.json', r)
 print(m)
 
 '''
@@ -31,4 +32,4 @@ for i in range(1,500):
     if 'city' in list(m.keys()):
         print(m['city'], r)
 '''
-#create_send_post('MplsPhotos', '54680')
+#create_send_post('p16022coll175', '1255')

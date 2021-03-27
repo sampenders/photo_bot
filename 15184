@@ -1,22 +1,22 @@
 {
-  "id": "p16022coll175:717",
-  "object": "https://cdm16022.contentdm.oclc.org/utils/getthumbnail/collection/p16022coll175/id/717",
+  "id": "p16022coll175:15184",
+  "object": "https://cdm16022.contentdm.oclc.org/utils/getthumbnail/collection/p16022coll175/id/15184",
   "set_spec": "p16022coll175",
   "collection_name": "University of Minnesota Archives Photograph Collection",
   "collection_name_s": "University of Minnesota Archives Photograph Collection",
   "collection_description": "Photographs of University of Minnesota campuses, people, and activities, 1870s - present. Includes images of staff, faculty, students, buildings, construction, classes, research, athletics, artworks.",
-  "title": "Christensen, Clyde M. (prof. of plant pathology, Lake Itasca Forestry and Biological Station)",
-  "title_s": "Christensen, Clyde M. (prof. of plant pathology, Lake Itasca Forestry and Biological Station)",
-  "title_t": "Christensen, Clyde M. (prof. of plant pathology, Lake Itasca Forestry and Biological Station)",
-  "title_search": "Christensen, Clyde M. (prof. of plant pathology, Lake Itasca Forestry and Biological Station)",
-  "title_sort": "christensenclydemprofofplantpathologylakeitascaforestryandbiologicalstation",
+  "title": "Stewart, Thomas E",
+  "title_s": "Stewart, Thomas E",
+  "title_t": "Stewart, Thomas E",
+  "title_search": "Stewart, Thomas E",
+  "title_sort": "stewartthomase",
   "date_created": [
-    "1956"
+    "1943"
   ],
   "date_created_ss": [
-    "1956"
+    "1943"
   ],
-  "date_created_sort": "1956",
+  "date_created_sort": "1943",
   "types": [
     "Still Image"
   ],
@@ -25,15 +25,6 @@
   ],
   "format_name": [
     "Black-and-white photographs"
-  ],
-  "dimensions": "10 x 8 inches",
-  "subject": [
-    "Christensen, Clyde Martin, 1905",
-    "University of Minnesota. Dept. Of Plant Pathology"
-  ],
-  "subject_ss": [
-    "Christensen, Clyde Martin, 1905",
-    "University of Minnesota. Dept. Of Plant Pathology"
   ],
   "city": [
     "Minneapolis;  St Paul"
@@ -52,30 +43,30 @@
   "contributing_organization_name_s": "University of Minnesota Libraries, University Archives.",
   "contact_information": "University of Minnesota Libraries, University Archives. 218 Elmer L. Andersen Library, 222 - 21st Avenue South, Minneapolis, MN 55455;  https://www.lib.umn.edu/uarchives",
   "local_identifier": [
-    "ua100087"
+    "Stewart-Thomas-01"
   ],
   "dls_identifier": [
-    "ua100087"
+    "una575057"
   ],
-  "persistent_url": "http://purl.umn.edu/81682",
+  "persistent_url": "http://purl.umn.edu/223422",
   "local_rights": "Use of this item may be governed by US and international copyright laws. You may be able to use this item, but copyright and other considerations may apply. For possible additional information or guidance on your use, please contact the contributing organization.",
   "page_count": 0,
   "record_type": "primary",
   "first_viewer_type": "image",
   "viewer_type": "image",
-  "attachment": "4852.jp2",
+  "attachment": "18103.jp2",
   "document_type": "item",
   "featured_collection_order": 999,
-  "date_added": "2017-12-08T00:00:00Z",
-  "date_added_sort": "2017-12-08T00:00:00Z",
-  "date_modified": "2017-12-08T00:00:00Z",
-  "_version_": 1681561456542220289,
+  "date_added": "2017-12-14T00:00:00Z",
+  "date_added_sort": "2017-12-14T00:00:00Z",
+  "date_modified": "2017-12-14T00:00:00Z",
+  "_version_": 1681635438110965761,
   "type": "Still Image",
   "collection": "p16022coll175",
   "is_compound": false,
-  "parent_id": "717",
-  "thumb_url": "https://cdm16022.contentdm.oclc.org/utils/getthumbnail/collection/p16022coll175/id/717",
-  "thumb_cdn_url": "https://dkp5i0hinw9br.cloudfront.net/50b8ebc9d4e97e413f44ed23f8bcf45bc2ccc59f.png",
+  "parent_id": "15184",
+  "thumb_url": "https://cdm16022.contentdm.oclc.org/utils/getthumbnail/collection/p16022coll175/id/15184",
+  "thumb_cdn_url": "https://dkp5i0hinw9br.cloudfront.net/057af4f3f55b793fb03e513a2adda1dfdebacddd.png",
   "children": [
 
   ]

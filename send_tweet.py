@@ -138,6 +138,37 @@ def get_metadata(url, out_file):
         f.close()
             
         #m.update{'title':t['response']['document']['title_ssi']}
+        
+    # university of minnesota archives
+    elif 'p16022coll175' in url:
+        try:
+            f = open(out_file)
+            t = json.load(f)
+            keys = list(t.keys())
+            metadata = {}
+        # if invalid record
+        except:
+            return {}
+            
+        metadata.update({'title':t['title']})
+        metadata.update({'permis':t['contributing_organization_name']})
+        metadata.update({'id':t['id'].split(':')[1]})
+          
+        # get description
+        if 'description' in keys:
+            metadata.update({'descri':t['description']})
+            
+        if 'date_created' in keys:
+            metadata.update({'year':t['date_created'][0]})
+            
+        if 'city' in keys:
+            cities = t['city']
+            # initialize
+            metadata.update({'city':t['city'][0]})
+            for city in cities:
+                # format typically like 'Minneapolis;  St Paul'
+                if 'minneapolis' in city.lower():
+                    metadata.update({'city':'Minneapolis'})
 
     # else if this is hclib photo
     else:
@@ -174,7 +205,7 @@ def get_metadata(url, out_file):
 
 def get_photo(url, out_image):
 
-    cmd = 'wget ' + url + ' --output-file=/dev/null -O ' + out_image
+    cmd = 'wget --user-agent="Mozilla" ' + url + ' --output-file=/dev/null -O ' + out_image
 
     proc = subprocess.Popen(cmd, shell=True)
     proc.wait()
@@ -230,7 +261,15 @@ def create_send_post(collection, photo_id):
         full_url = 'https://cdm16022.contentdm.oclc.org/digital/iiif/msn/' + str(photo_id) + '/full/1920,1920/0/default.jpg'
         metadata_url = 'https://collection.mndigital.org//catalog/msn:' + str(photo_id) + '.json'
 
-        out_image = 'images/' + collection + photo_id + '.jpg'       
+        out_image = 'images/' + collection + photo_id + '.jpg'
+    
+    # umn archives    
+    elif collection == 'p16022coll175':
+        full_url = 'https://cdm16022.contentdm.oclc.org/digital/iiif/p16022coll175/' + str(photo_id) + '/full/1920,1920/0/default.jpg'
+        metadata_url = 'https://umedia.lib.umn.edu/item/p16022coll175:' + str(photo_id) + '.json'
+
+        out_image = 'images/' + collection + photo_id + '.jpg'  
+                 
     # if hclib collection:
     else:
         base_url = 'https://digitalcollections.hclib.org/'
@@ -263,7 +302,7 @@ def create_send_post(collection, photo_id):
         perm_exists = False
         if 'permis' in metadata_keys:
 
-            # assuming normal format
+            # assuming normal format for hclb
             if ':' in metadata['permis']:
                 try:
                     source = metadata['permis'].split(':')[1]
@@ -283,7 +322,11 @@ def create_send_post(collection, photo_id):
             if 'Streetcar Museum' in metadata['permis']:
                 source = metadata['permis']
                 perm_exists = True
-
+                
+            if 'University Archives' in metadata['permis']:
+                source = metadata['permis']
+                perm_exists = True                
+            
             # if the permissions say you need to contact them, don't post
             if 'viewed' in metadata['permis'] and 'specialcoll@hclib.org' in metadata['permis']:
                 source = ''
@@ -372,9 +415,9 @@ if __name__ == '__main__':
     time = datetime.datetime.now()
 
     # coll18 is really old photos, coll1 is glanton photos
-    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1', 'msn', 'p17208coll15']
-    max_idx = [21250, 60000, 212, 251, 1100, 820, 2776, 1406]
-    weights = [20, 15, 1, 1, 5, 3, 10, 5]
+    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1', 'msn', 'p17208coll15', 'p16022coll175']
+    max_idx = [21250, 60000, 212, 251, 1100, 820, 2776, 1406, 21899]
+    weights = [20, 15, 1, 1, 5, 3, 10, 5, 10000000000]
 
     # open connection to photo database
     db = photoDB('photoDB.db')
@@ -396,6 +439,7 @@ if __name__ == '__main__':
             # randomly choose photo in collection
             # if = -1, then there are no records left
             photo_idx = db.get_random_row(collections[coll])
+            
             #photo_idx = randint(1,max_idx[coll]) 
             if int(photo_idx) != -1:
                 posted = create_send_post(collections[coll], str(photo_idx))
