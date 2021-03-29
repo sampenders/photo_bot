@@ -414,10 +414,10 @@ if __name__ == '__main__':
 
     time = datetime.datetime.now()
 
-    # coll18 is really old photos, coll1 is glanton photos
+    # coll18 is really old photos, coll1 is glanton photos, coll 175 is university archives
     collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1', 'msn', 'p17208coll15', 'p16022coll175']
     max_idx = [21250, 60000, 212, 251, 1100, 820, 2776, 1406, 21899]
-    weights = [20, 15, 1, 1, 5, 3, 10, 5, 10000000000]
+    weights = [20, 13, 1, 1, 5, 3, 10, 5, 10]
 
     # open connection to photo database
     db = photoDB('photoDB.db')
@@ -457,28 +457,3 @@ if __name__ == '__main__':
         f.close()
 
         db.con.close()
-
-'''
-
-# historical research inc (823 records)
-https://digitalcollections.hclib.org/digital/download/collection/HRInc/id/55/size/large
-
-# CPED collection (21250 records)
-https://digitalcollections.hclib.org/digital/download/collection/CPED/id/9219/size/large
-https://digitalcollections.hclib.org/digital/collection/CPED/id/21200
-
-# urban renewal:
-https://digitalcollections.hclib.org/digital/collection/FloydKelley/id/210 (210)
-
-# hennepin history museum collection
-https://digitalcollections.hclib.org/digital/collection/p17208coll13/id/14462/rec/1
-
-# african american collection
-# shouldn't use because need permission of copywriter
-https://digitalcollections.hclib.org/digital/collection/p17208coll1/id/0/rec/1 (820)
-
-
-# Mpls Photo collection (60000 records)
-https://digitalcollections.hclib.org/digital/collection/MplsPhotos/id/60000 
-'''
-

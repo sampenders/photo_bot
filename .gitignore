@@ -2,5 +2,8 @@ api_keys.txt
 bad_words.txt
 post_log.txt
 send_tweet.sh
-images/*
+images/
 *.db
+*.pyc
+__pycache__/
+test*
