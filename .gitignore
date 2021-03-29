@@ -5,5 +5,5 @@ send_tweet.sh
 images/
 *.db
 *.pyc
-__pycache__/
+/__pycache__
 test*
