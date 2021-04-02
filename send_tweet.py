@@ -49,39 +49,31 @@ class photoDB:
         self.con.commit()
 
 # break up description into valid length parts
-def description_parts(description):
+def description_parts(desc):
+    desc_parts = []
 
-    description = 'Description: ' + description
-    split_d = description.split(' ')
-    d_parts = []
-    
-    prev_len = 0
-    len_phrase = 0
-    idx_last_phrase = 0
-    for i in range(0, len(split_d)):
-        prev_len = len_phrase
-        len_phrase += len(split_d[i]) + 1
+    desc = 'Description: ' + desc
 
-        # create first part of description
-        if len_phrase > 276 and len(description) > 280:
-            phrase = ''
-            for j in range(idx_last_phrase, i-1):
-                phrase += split_d[j] + ' '
-            phrase += split_d[i-1] + ' ...'
-            d_parts.append(phrase)
+    if len(desc) <= 280:
+        desc_parts = [desc]
 
-            # reinitialize to get rest
-            len_phrase = 0
-            idx_last_phrase = i
+    else:
+        l_idx = 0
+        r_idx = 276
+        finished = False
+        while finished == False:
+            # finish if we've reached the end of the string
+            if r_idx >= len(desc)-1:
+                finished = True
+                desc_parts.append(desc[l_idx:])
+            else:
+                r_idx = desc[l_idx:r_idx].rfind(' ') + l_idx
+                desc_parts.append(desc[l_idx:r_idx] + ' ...')
 
-        if i == len(split_d)-1:
-            phrase = ''
-            for j in range(idx_last_phrase, i):
-                phrase += split_d[j] + ' '
-            phrase += split_d[i]
-            d_parts.append(phrase)
+            l_idx=r_idx+1
+            r_idx+=276
 
-    return d_parts
+    return desc_parts
 
 # randomly choose index of collection given weights
 def choose_collection(weights):
