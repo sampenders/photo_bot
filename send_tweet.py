@@ -257,7 +257,7 @@ def create_send_post(collection, photo_id):
     
     # umn archives    
     elif collection == 'p16022coll175':
-        full_url = 'https://cdm16022.contentdm.oclc.org/digital/iiif/p16022coll175/' + str(photo_id) + '/full/1920,1920/0/default.jpg'
+        full_url = 'https://cdm16022.contentdm.oclc.org/digital/iiif/p16022coll175/' + str(photo_id) + '/full/full/0/default.jpg'
         metadata_url = 'https://umedia.lib.umn.edu/item/p16022coll175:' + str(photo_id) + '.json'
 
         out_image = 'images/' + collection + photo_id + '.jpg'  
