@@ -4,6 +4,7 @@ from random import randint
 import tweepy
 import datetime
 import sqlite3
+import requests
 
 class photoDB:
     def __init__(self, db_name):
@@ -88,23 +89,19 @@ def choose_collection(weights):
         if r <= sum_:
             return(i)
 
-def get_metadata(url, out_file):
-      
-    cmd = 'wget ' + url + ' --output-file=/dev/null -O ' + out_file
-    proc = subprocess.Popen(cmd, shell=True)
-    proc.wait()
+def get_metadata(url):
+    
+    # get json  
+    t = json.loads(requests.get(url).text)
 
     # if this if from streetcar collection:
     if 'msn' in url:
         try:
-            f = open(out_file)
-            t = json.load(f)
             keys = list(t['response']['document'].keys())
             metadata = {}
         # if invalid record
         except:
             return {}
-            
         
         # get title
         metadata.update({'title':t['response']['document']['title_ssi']})
@@ -127,15 +124,11 @@ def get_metadata(url, out_file):
             else:
                 metadata.update({'city':t['response']['document']['city_ssim'][0]})
             
-        f.close()
-            
         #m.update{'title':t['response']['document']['title_ssi']}
         
     # university of minnesota archives
     elif 'p16022coll175' in url:
         try:
-            f = open(out_file)
-            t = json.load(f)
             keys = list(t.keys())
             metadata = {}
         # if invalid record
@@ -164,34 +157,24 @@ def get_metadata(url, out_file):
 
     # else if this is hclib photo
     else:
-        t = ''
-        with open('images/metadata.txt') as f:
-            for line in f:
-                if 'JSON' in line:
-                    t = line[line.find('JSON') + 12: len(line)-4]
-        if t == '':
-            return
-       
-        # clean data
-        t = t.replace('\\\\\\"',"'")
-        t = t.replace('\\','')
-        t = t.strip('\n')
-        t = t.rstrip('"')
-        t = t.lstrip('"')
-
-        data = json.loads(t)
-        metadata = {}
         try:
-            # add id field to metadata
-            metadata.update({'id':data['item']['item']['id']})
-
-            for i in range(0, len(data['item']['item']['fields'])):
-                entry = data['item']['item']['fields'][i]
-
-                metadata.update({entry['key']:entry['value'].strip()})
-        except:
+            metadata = t
+            
+            fields_to_remove = []
+            for field in t:
+                if metadata[field] == {}:
+                    fields_to_remove.append(field)
+            for field in fields_to_remove:
+                metadata.pop(field)
+                
+            # manually add this field in as 'id' for compatibility purposes
+            metadata.update({'id': metadata['dmrecord']})
+                    
+        except Exception as e:
             print('failure to get metadata')
-            print(data['item']['item'])
+            print(e)
+            print(metadata)
+            return {}
 
     return metadata
 
@@ -266,13 +249,13 @@ def create_send_post(collection, photo_id):
     else:
         base_url = 'https://digitalcollections.hclib.org/'
         full_url = base_url + 'digital/download/collection/' + collection + '/id/' + str(photo_id) + '/size/large'
-        metadata_url = base_url + 'digital/collection/' + collection + '/id/' + str(photo_id)
+        metadata_url = base_url + 'digital/bl/dmwebservices/index.php?q=dmGetItemInfo/' + collection + '/' + str(photo_id) + '/json'
 
         out_image = 'images/' + collection + photo_id + '.jpg'
 
     # try to create photo and get metadata
     photo_created = get_photo(full_url, out_image)
-    metadata = get_metadata(metadata_url, 'images/metadata.txt')
+    metadata = get_metadata(metadata_url)
     len_metadata = len(metadata)
 
     # return false if photo or metadata weren't retrieved or 
@@ -397,7 +380,7 @@ def create_send_post(collection, photo_id):
 
     # failed if couldn't get photo, metadata, or metadata id doesn't match
     else:
-        print(full_url + ' failed')
+        print(- + ' failed')
         return False
 
 # main loop for sending posts
