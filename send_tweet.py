@@ -233,7 +233,7 @@ def create_send_post(collection, photo_id):
 
     # images we'll be pulling
     if collection == 'msn':
-        full_url = 'https://cdm16022.contentdm.oclc.org/digital/iiif/msn/' + str(photo_id) + '/full/1920,1920/0/default.jpg'
+        full_url = 'https://cdm16022.contentdm.oclc.org/digital/iiif/msn/' + str(photo_id) + '/full/full/0/default.jpg'
         metadata_url = 'https://collection.mndigital.org//catalog/msn:' + str(photo_id) + '.json'
 
         out_image = 'images/' + collection + photo_id + '.jpg'
@@ -400,35 +400,33 @@ if __name__ == '__main__':
     sum_weights = 0
     for i in weights: sum_weights+=i
 
-    if time.hour >= 8 and time.hour <= 22:
+    # try until a photo is found and posted
+    tries = 0
+    posted = False
+    while posted == False and tries < 10:
 
+        # randomly choose collection based on weights given
+        coll = choose_collection(weights)
 
-        # try until a photo is found and posted
-        tries = 0
-        posted = False
-        while posted == False and tries < 10:
+        # randomly choose photo in collection
+        # if = -1, then there are no records left
+        photo_idx = db.get_random_row(collections[coll])
+        
+        #photo_idx = randint(1,max_idx[coll]) 
+        if int(photo_idx) != -1:
+            posted = create_send_post(collections[coll], str(photo_idx))
 
-            # randomly choose collection based on weights given
-            coll = choose_collection(weights)
+            # update database with whether this was posted or not
+            if posted == False:
+                db.update_row_status(time.strftime('%d/%m/%y %H:%M:%S'), collections[coll] + '_' + str(photo_idx), 1)
+            else:
+                db.update_row_status(time.strftime('%d/%m/%y %H:%M:%S'), collections[coll] + '_' + str(photo_idx), 0)
 
-            # randomly choose photo in collection
-            # if = -1, then there are no records left
-            photo_idx = db.get_random_row(collections[coll])
-            
-            #photo_idx = randint(1,max_idx[coll]) 
-            if int(photo_idx) != -1:
-                posted = create_send_post(collections[coll], str(photo_idx))
+                # write to log
+                f = open('post_log.txt','a')
+                f.write(time.strftime('%d/%m/%y %H:%M:%S') + ',' + collections[coll] + ',' + str(photo_idx) + '\n')
+                f.close()
 
-                # update database with whether this was posted or not
-                if posted == False:
-                    db.update_row_status(time.strftime('%d/%m/%y %H:%M:%S'), collections[coll] + '_' + str(photo_idx), 1)
-                else:
-                    db.update_row_status(time.strftime('%d/%m/%y %H:%M:%S'), collections[coll] + '_' + str(photo_idx), 0)
+            tries += 1
 
-                tries += 1
-
-        f = open('post_log.txt','a')
-        f.write(time.strftime('%d/%m/%y %H:%M:%S') + ',' + collections[coll] + ',' + str(photo_idx) + '\n')
-        f.close()
-
-        db.con.close()
+    db.con.close()
