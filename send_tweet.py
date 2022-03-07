@@ -380,7 +380,7 @@ def create_send_post(collection, photo_id):
 
     # failed if couldn't get photo, metadata, or metadata id doesn't match
     else:
-        print(- + ' failed')
+        print(' failed')
         return False
 
 # main loop for sending posts
