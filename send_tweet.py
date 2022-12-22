@@ -325,9 +325,9 @@ def create_send_post(collection, photo_id):
         tweet1 += '\nDate: ' + date
         if 'addres' in metadata_keys:
             tweet1 += '\nAddress: ' + metadata['addres'] 
-            if 'SE' in metadata['addres'].upper().split(' '):
-                tweet1 += ' #SEmpls'
         tweet1 += '\nSource: ' + source
+        # trim long tweets
+        tweet1 = tweet1[0:280]
         print(tweet1)
 
         if 'descri' in metadata_keys:
