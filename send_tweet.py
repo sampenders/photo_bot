@@ -51,17 +51,17 @@ class photoDB:
         self.con.commit()
 
 # break up description into valid length parts
-def description_parts(desc):
+def description_parts(desc, length):
     desc_parts = []
 
     desc = 'Description: ' + desc
 
-    if len(desc) <= 280:
+    if len(desc) <= length:
         desc_parts = [desc]
 
     else:
         l_idx = 0
-        r_idx = 276
+        r_idx = length - 4
         finished = False
         while finished == False:
             # finish if we've reached the end of the string
@@ -72,8 +72,8 @@ def description_parts(desc):
                 r_idx = desc[l_idx:r_idx].rfind(' ') + l_idx
                 desc_parts.append(desc[l_idx:r_idx] + ' ...')
 
-            l_idx=r_idx+1
-            r_idx+=276
+            l_idx = r_idx + 1
+            r_idx += length - 4
 
     return desc_parts
 
@@ -377,7 +377,7 @@ def create_send_post(collection, photo_id):
            
             # add description in a reply if available
             if description != '':
-                descr_text = description_parts(description)
+                descr_text = description_parts(description, 280)
                 
                 # don't tweet anymore
                 # prev_id = status.id
