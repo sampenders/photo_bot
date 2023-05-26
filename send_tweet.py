@@ -51,10 +51,10 @@ class photoDB:
         self.con.commit()
 
 # break up description into valid length parts
-def description_parts(desc, length):
+def post_parts(desc, length):
     desc_parts = []
 
-    desc = 'Description: ' + desc
+    # desc = 'Description: ' + desc
 
     if len(desc) <= length:
         desc_parts = [desc]
@@ -322,19 +322,19 @@ def create_send_post(collection, photo_id):
         tweet1 = title
 
         if 'year' in metadata_keys or 'decade' in metadata_keys:
-            tweet1 += '\nDate: ' + date
+            tweet1 += ' (' + date + ')'
 
         if 'addres' in metadata_keys:
-            tweet1 += '\nAddress: ' + metadata['addres']
+            tweet1 += '\n' +  metadata['addres']
 
         tweet1 += '\nSource: ' + source
         
         # trim long tweets
-        tweet1 = tweet1[0:280]
-        print(tweet1)
+        # tweet1 = tweet1[0:280]
 
         if 'descri' in metadata_keys:
             description = metadata['descri']
+            tweet1 += '\n\n' + description
         else:
             description = ''
 
@@ -342,6 +342,9 @@ def create_send_post(collection, photo_id):
             subject = metadata['subjec']
         else:
             subject = ''
+            
+        print(tweet1)
+
 
         # check that the photo was taken in minneapolis
         # if there's no city field, assume it was in mpls
@@ -372,28 +375,23 @@ def create_send_post(collection, photo_id):
             # status = api.update_with_media(out_image, tweet1)
 
             print('sending toot')
+            toot_len = 500
+            post_text = post_parts(tweet1, toot_len)
             mast_media = mastodon.media_post(out_image)
-            toot = mastodon.status_post(tweet1, media_ids=mast_media)
-           
-            # add description in a reply if available
-            if description != '':
-                descr_text = description_parts(description, 280)
-                
+            toot = mastodon.status_post(post_text[0], media_ids=mast_media)
+            
+            prev_toot_id = toot.id
+            for i in range(1, len(post_text)):
                 # don't tweet anymore
-                # prev_id = status.id
-                
-                prev_toot_id = toot.id
-                for d in descr_text:
-                    # don't tweet anymore
-                    # tweet thread
-                    # reply = api.update_status(status=d, 
-                    #                  in_reply_to_status_id=prev_id, 
-                    #                  auto_populate_reply_metadata=True)
-                    # prev_id = reply.id
+                # tweet thread
+                # reply = api.update_status(status=d, 
+                #                  in_reply_to_status_id=prev_id, 
+                #                  auto_populate_reply_metadata=True)
+                # prev_id = reply.id
 
-                    # mastodon thread
-                    mast_reply = mastodon.status_post(status=d, in_reply_to_id=prev_toot_id)
-                    prev_toot_id = mast_reply.id
+                # mastodon thread
+                mast_reply = mastodon.status_post(status=post_text[i], in_reply_to_id=prev_toot_id)
+                prev_toot_id = mast_reply.id
 
             return True
 
