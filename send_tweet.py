@@ -93,7 +93,7 @@ def choose_collection(weights):
 def get_metadata(url):
     
     # get json  
-    t = json.loads(requests.get(url).text)
+    t = json.loads(requests.get(url, verify=False).text)
 
     # if this if from streetcar collection:
     if 'msn' in url:
@@ -414,9 +414,11 @@ if __name__ == '__main__':
     time = datetime.datetime.now()
 
     # coll18 is really old photos, coll1 is glanton photos, coll 175 is university archives
-    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1', 'msn', 'p17208coll15', 'p16022coll175']
-    max_idx = [21250, 60000, 212, 251, 1100, 820, 2776, 1406, 21899]
-    weights = [20, 13, 1, 1, 5, 3, 10, 5, 10]
+    collections = ['CPED', 'MplsPhotos', 'FloydKelley', 'MPRB', 'p17208coll18', 'p17208coll1', 
+	'msn', 'p17208coll15', 'p16022coll175', 'MplsNAs', 'HCPublicWorks', 'WPAPhotos']
+    max_idx = [21250, 60000, 212, 251, 1100, 820, 
+	2776, 1406, 21899, 3290, 868, 609]
+    weights = [20, 13, 1, 1, 5, 3, 10, 5, 10, 3, 5, 1]
 
     # open connection to photo database
     db = photoDB('photoDB.db')
